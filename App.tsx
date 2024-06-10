@@ -12,6 +12,7 @@ import AdicionarGastos from './src/pages/AdicionarGastos/gastosIndex';
 import Icon from 'react-native-vector-icons/AntDesign';
 import Movimentacoes from './src/pages/Home/movimentacoes'
 import Loading from './src/pages/Loading/loading'
+import EditCategoria from './src/pages/Dashboard/editCategorias'
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -25,6 +26,7 @@ function DashboardStack() {
       <Stack.Screen name="Categoria" component={Categoria} />
       <Stack.Screen name="AdicionarGanho" component={AdicionarGanho} />
       <Stack.Screen name="AdicionarGastos" component={AdicionarGastos} />
+      <Stack.Screen name="EditCategoria" component={EditCategoria} />
     </Stack.Navigator>
   );
 }

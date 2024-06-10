@@ -35,20 +35,19 @@ const Dashboard = () => {
       <StatusBar barStyle="dark-content" />
       <Header />
       <View style={styles.DashContainer}>
-      <Text style={styles.sectionTitle}>Dashboard</Text>
-      <View style={styles.dashboard}>
-        <TouchableOpacity style={styles.buttonAddIncome} onPress={() => {
-          navigation.navigate('AdicionarGanho' as never);
-        }}>
-          <Text style={styles.buttonText} >Adicionar ganhos</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.buttonAddExpense} onPress={() => {
-          navigation.navigate('AdicionarGastos' as never);
-        }}>
-          <Text style={styles.buttonText}>Adicionar gastos</Text>
-        </TouchableOpacity>
-      </View>
-      {/* </View> */}
+        <Text style={styles.sectionTitle}>Dashboard</Text>
+        <View style={styles.dashboard}>
+          <TouchableOpacity style={styles.buttonAddIncome} onPress={() => {
+            navigation.navigate('AdicionarGanho' as never);
+          }}>
+            <Text style={styles.buttonText}>Adicionar ganhos</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.buttonAddExpense} onPress={() => {
+            navigation.navigate('AdicionarGastos' as never);
+          }}>
+            <Text style={styles.buttonText}>Adicionar gastos</Text>
+          </TouchableOpacity>
+        </View>
       </View>
       <View style={styles.chartContainer}>
         <Text style={styles.chartTitle}>Despesas por categoria</Text>
@@ -63,15 +62,22 @@ const Dashboard = () => {
           absolute
         />
         <TouchableOpacity
-        style={styles.floatingButton}
-        onPress={() => {
-          navigation.navigate('Categoria' as never);
-        }}
-      >
-        <Text style={styles.floatingButtonText}>+</Text>
-      </TouchableOpacity>
+          style={styles.categoryButton}
+          onPress={() => {
+            navigation.navigate('EditCategoria' as never);
+          }}
+        >
+          <Text style={styles.categoryButtonText}>Categorias</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.floatingButton}
+          onPress={() => {
+            navigation.navigate('Categoria' as never);
+          }}
+        >
+          <Text style={styles.floatingButtonText}>+</Text>
+        </TouchableOpacity>
       </View>
-      
     </SafeAreaView>
   );
 };
@@ -132,6 +138,18 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 10,
+  },
+  categoryButton: {
+    bottom: -35,
+    backgroundColor: '#aedecf',
+    padding: 10,
+    borderRadius: 5,
+    alignSelf: 'flex-start'
+  },
+  categoryButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
   floatingButton: {
     position: 'relative',
