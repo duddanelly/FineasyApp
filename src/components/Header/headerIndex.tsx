@@ -8,26 +8,26 @@ import { launchImageLibrary, ImageLibraryOptions } from 'react-native-image-pick
 
 export default function Header() {
   const navigation = useNavigation();
-  const [imageUri, setImageUri] = useState<string | null>(null);
+  // const [imageUri, setImageUri] = useState<string | null>(null);
 
-  const handleSelectImage = () => {
-    const options: ImageLibraryOptions = {
-      mediaType: 'photo',
-      maxWidth: 300,
-      maxHeight: 300,
-      quality: 1,
-    };
+  // const handleSelectImage = () => {
+  //   const options: ImageLibraryOptions = {
+  //     mediaType: 'photo',
+  //     maxWidth: 300,
+  //     maxHeight: 300,
+  //     quality: 1,
+  //   };
 
-    launchImageLibrary(options, (response) => {
-      if (response.didCancel) {
-        console.log('User cancelled image picker');
-      } else if (response.errorCode) {
-        console.log('ImagePicker Error: ', response.errorMessage);
-      } else if (response.assets && response.assets.length > 0 && response.assets[0].uri) {
-        setImageUri(response.assets[0].uri);
-      }
-    });
-  };
+  //   launchImageLibrary(options, (response) => {
+  //     if (response.didCancel) {
+  //       console.log('User cancelled image picker');
+  //     } else if (response.errorCode) {
+  //       console.log('ImagePicker Error: ', response.errorMessage);
+  //     } else if (response.assets && response.assets.length > 0 && response.assets[0].uri) {
+  //       setImageUri(response.assets[0].uri);
+  //     }
+  //   });
+  // };
 
   return (
     <View style={styles.headerContainer}>
@@ -45,10 +45,10 @@ export default function Header() {
         </TouchableOpacity>
       </View>
       <View style={styles.header}>
-        <TouchableOpacity onPress={handleSelectImage}>
-        <Image source={{ uri: '/Users/mariamuncinelli/FACULDADE/P5_MOBILE/FineasyApp/src/assets/profile.jpg' }} style={styles.profileImage} />
+        {/* <TouchableOpacity onPress={handleSelectImage}> */}
+        <Image source={{ uri: '/Users/mariamuncinelli/FACULDADE/P5_MOBILE/FineasyApp/src/assets/Logo.png' }} style={styles.profileImage} />
 
-        </TouchableOpacity>
+        {/* </TouchableOpacity> */}
         <Text style={styles.welcomeText}>Seja bem vindo ao</Text>
         <Text style={styles.userName}>Fineasy!</Text>
       </View>
@@ -76,7 +76,7 @@ const styles = StyleSheet.create({
   profileImage: {
     width: 100,
     height: 100,
-    borderRadius: 50,
+    // borderRadius: 50,
     marginBottom: 10,
   },
   welcomeText: {
