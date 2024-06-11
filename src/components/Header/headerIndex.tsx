@@ -46,7 +46,7 @@ export default function Header() {
       </View>
       <View style={styles.header}>
         {/* <TouchableOpacity onPress={handleSelectImage}> */}
-        <Image source={{ uri: '/Users/mariamuncinelli/FACULDADE/P5_MOBILE/FineasyApp/src/assets/Logo.png' }} style={styles.profileImage} />
+        <Image source={{ uri: '/Users/mariamuncinelli/FACULDADE/P5_MOBILE/FineasyApp/src/assets/porcobranco.png' }} style={styles.profileImage} />
 
         {/* </TouchableOpacity> */}
         <Text style={styles.welcomeText}>Seja bem vindo ao</Text>

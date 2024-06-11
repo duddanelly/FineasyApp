@@ -11,11 +11,8 @@ const Movimentacoes: React.FC = () => {
   useEffect(() => {
     const login = async () => {
       try {
-        const response = await api.post("/login", {
-          email: 'duda@email.com',
-          password: 'Duda123!',
-        });
-        console.log("Login bem-sucedido:", response.data);
+        const response = await api.get("/Category");
+        console.log("Deu boa:", response.data);
       } catch (error) {
         if (axios.isAxiosError(error)) {
           if (error.response) {
