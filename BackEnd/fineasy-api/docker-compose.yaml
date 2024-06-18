@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    container_name: sqlserver
+    environment:
+      SA_PASSWORD: "YourStrong!Passw0rd"
+      ACCEPT_EULA: "Y"
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver_data:/var/opt/mssql
+    networks:
+      - fineasy-network
+
+  fineasyapi:
+    image: mauritsstrijker/fineasyapi:latest
+    container_name: fineasyapi
+    depends_on:
+      - sqlserver
+    environment:
+      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=master;User=sa;Password=YourStrong!Passw0rd;
+    ports:
+      - "8080:80"
+    networks:
+      - fineasy-network
+    volumes:
+      - ./fineasyapi:/app
+
+volumes:
+  sqlserver_data:
+
+networks:
+  fineasy-network:
+    driver: bridge

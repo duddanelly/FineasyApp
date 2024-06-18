@@ -1,0 +1,32 @@
+﻿<Properties StartupConfiguration="{A02FB810-8DB8-411D-B6DD-4898B0F630F3}|http">
+  <MultiItemStartupConfigurations />
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Properties/launchSettings.json">
+    <Files>
+      <File FileName="appsettings.Development.json" />
+      <File FileName="../../../../usr/local/share/dotnet/sdk/7.0.316/Sdks/Microsoft.NET.Sdk/targets/Microsoft.NET.TargetFrameworkInference.targets" />
+      <File FileName="Extensions/MigrationExtensions.cs" />
+      <File FileName="Properties/launchSettings.json" Line="15" Column="29" />
+    </Files>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State name="__root__">
+          <Node name="fineasy-api" expanded="True">
+            <Node name="fineasy-api" expanded="True">
+              <Node name="Extensions" expanded="True" />
+              <Node name="Properties" expanded="True" />
+              <Node name="appsettings.json" expanded="True">
+                <Node name="appsettings.Development.json" selected="True" />
+              </Node>
+            </Node>
+          </Node>
+        </State>
+      </Pad>
+    </Pads>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.ItemProperties.fineasy-api PreferredExecutionTarget="/Applications/Google Chrome.app" />
+</Properties>
