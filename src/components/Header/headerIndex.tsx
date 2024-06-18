@@ -1,6 +1,5 @@
 import React from 'react';
 import { StyleSheet, Text, View, Image, TouchableOpacity, Platform } from 'react-native';
-import AntDesign from 'react-native-vector-icons/AntDesign';
 import { getStatusBarHeight } from 'react-native-status-bar-height';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -24,7 +23,10 @@ export default function Header() {
     <View style={styles.headerContainer}>
       <View style={styles.iconsContainer}>
         <TouchableOpacity onPress={handleLogout}>
-          <AntDesign name="logout" color='white' size={25} style={styles.headerIcon} />
+          <Image 
+            source={{ uri: '/Users/mariamuncinelli/FACULDADE/P5_MOBILE/FineasyApp/src/assets/icons8-logout-50.png' }} 
+            style={styles.logoutIcon} 
+          />
         </TouchableOpacity>
       </View>
       <View style={styles.header}>
@@ -67,9 +69,9 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#ffffff',
   },
-  headerIcon: {
+  logoutIcon: {
+    width: 25, // ajuste conforme necessário
+    height: 25, // ajuste conforme necessário
     marginLeft: 10,
-    fontSize: 30
-    
   },
 });
