@@ -1,21 +1,98 @@
-import React, { useState, useEffect } from 'react';
-import { TouchableOpacity, SafeAreaView, ScrollView, StyleSheet, Text, View } from 'react-native';
+import React, { useState, useEffect, useCallback } from 'react';
+import { TouchableOpacity, SafeAreaView, ScrollView, StyleSheet, Text, View, Alert } from 'react-native';
 import Header from '../../components/Header/headerIndex';
-import { useNavigation } from '@react-navigation/native';
-import LoadingScreen from '../Loading/loading'; // Importando a tela de loading
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import LoadingScreen from '../Loading/loading';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+interface Transaction {
+  id: string;
+  description: string;
+  value: number;
+  date: string;
+  categoryId: string;
+  isRecurrent: boolean;
+}
 
 const HomeScreen: React.FC = () => {
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 3000); 
-    
-    return () => clearTimeout(timer);
-  }, []);
-
+  const [balance, setBalance] = useState<number | null>(null);
+  const [ganhos, setGanhos] = useState<number>(0);
+  const [gastos, setGastos] = useState<number>(0);
   const navigation = useNavigation();
+
+  const fetchBalance = async () => {
+    const token = await AsyncStorage.getItem('userToken');
+    try {
+      const response = await fetch('http://localhost:5208/User', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const responseBody = await response.json();
+      if (response.status === 200) {
+        setBalance(responseBody.balance);
+      } else {
+        console.error('Erro na resposta do servidor:', responseBody);
+      }
+    } catch (error) {
+      console.error('Erro ao buscar saldo:', error);
+      Alert.alert('Erro', `Não foi possível se conectar ao servidor. Detalhes: ${error}`);
+    }
+  };
+
+  const fetchTransaction = async () => {
+    const token = await AsyncStorage.getItem('userToken');
+    try {
+      const response = await fetch('http://localhost:5208/Transaction', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      const responseBody = await response.json();
+      if (responseBody && Array.isArray(responseBody)) {
+        setTransactions(responseBody.slice(0, 4));
+        calculateGanhosEGastos(responseBody);
+      } else {
+        console.error('Unexpected response format:', responseBody);
+        Alert.alert('Erro', 'Resposta inesperada ao buscar transações.');
+      }
+    } catch (error) {
+      console.error('Erro ao buscar transações:', error);
+      Alert.alert('Erro', `Não foi possível se conectar ao servidor. Detalhes: ${error}`);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const calculateGanhosEGastos = (transactions: Transaction[]) => {
+    let ganhosTotal = 0;
+    let gastosTotal = 0;
+    transactions.forEach(transaction => {
+      if (transaction.value > 0) {
+        ganhosTotal += transaction.value;
+      } else {
+        gastosTotal += transaction.value;
+      }
+    });
+    setGanhos(ganhosTotal);
+    setGastos(gastosTotal);
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchBalance();
+      fetchTransaction();
+    }, [])
+  );
 
   if (isLoading) {
     return <LoadingScreen />;
@@ -27,15 +104,15 @@ const HomeScreen: React.FC = () => {
         <Header />
         <View style={styles.balanceContainer}>
           <Text style={styles.balanceLabel}>Saldo geral</Text>
-          <Text style={styles.balanceAmount}>R$ 2500,00</Text>
+          <Text style={styles.balanceAmount}>R$ {balance?.toFixed(2)}</Text>
         </View>
         <View style={styles.overviewContainer}>
           <View style={styles.overviewItem}>
-            <Text style={[styles.overviewAmount, styles.gainsAmount]}>R$ 200,00</Text>
+            <Text style={[styles.overviewAmount, styles.gainsAmount]}>R$ {ganhos.toFixed(2)}</Text>
             <Text style={styles.overviewLabel}>Ganhos</Text>
           </View>
           <View style={styles.overviewItem}>
-            <Text style={[styles.overviewAmount, styles.expensesAmount]}>R$ 150,00</Text>
+            <Text style={[styles.overviewAmount, styles.expensesAmount]}>R$ {gastos.toFixed(2)}</Text>
             <Text style={styles.overviewLabel}>Gastos</Text>
           </View>
         </View>
@@ -54,21 +131,32 @@ const HomeScreen: React.FC = () => {
         </View>
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Últimas Movimentações</Text>
-          <View style={styles.transactionItem}>
-            <Text style={styles.transactionText}>Transação 1</Text>
-          </View>
-          <View style={styles.transactionItem}>
-            <Text style={styles.transactionText}>Transação 2</Text>
-          </View>
-          <View style={styles.transactionItem}>
-            <Text style={styles.transactionText}>Transação 3</Text>
-          </View>
-          <View style={styles.transactionItem}>
-            <Text style={styles.transactionText}>Transação 4</Text>
-          </View>
-          <TouchableOpacity style={[styles.floatingButton, { backgroundColor: '#96CEB4' }]} onPress={() => {
-            navigation.navigate('Movimentacoes' as never);
-          }}>
+          {transactions.length > 0 ? (
+            transactions.map(transaction => (
+              <View key={transaction.id} style={styles.transactionItem}>
+                <Text style={styles.transactionDescription}>{transaction.description}</Text>
+                <Text
+                  style={[
+                    styles.transactionValue,
+                    transaction.value < 0 ? styles.negativeValue : styles.positiveValue,
+                  ]}
+                >
+                  R$ {transaction.value.toFixed(2)}
+                </Text>
+                <Text style={styles.transactionDate}>
+                  {new Date(transaction.date).toLocaleDateString()}
+                </Text>
+              </View>
+            ))
+          ) : (
+            <Text style={styles.noTransactionsText}>Nenhuma transação encontrada.</Text>
+          )}
+          <TouchableOpacity
+            style={[styles.floatingButton, { backgroundColor: '#96CEB4' }]}
+            onPress={() => {
+              navigation.navigate('Movimentacoes' as never);
+            }}
+          >
             <Text style={styles.floatingButtonText}>Histórico de Movimentações</Text>
           </TouchableOpacity>
         </View>
@@ -167,9 +255,30 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     elevation: 2,
   },
-  transactionText: {
+  transactionDescription: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  transactionValue: {
+    fontSize: 14,
+  },
+  positiveValue: {
+    color: '#27ae60',
+  },
+  negativeValue: {
+    color: '#e74c3c',
+  },
+  transactionDate: {
+    fontSize: 12,
+    color: '#777',
+    marginTop: 5,
+  },
+  noTransactionsText: {
     fontSize: 16,
-    color: '#000000',
+    color: '#888',
+    textAlign: 'center',
+    marginTop: 20,
   },
   floatingButton: {
     backgroundColor: '#6fcf97',
@@ -179,11 +288,13 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginTop: 20,
     marginBottom: 20,
+    alignSelf: 'center',
   },
   floatingButtonText: {
     color: '#FFF',
     fontSize: 18,
     fontWeight: 'bold',
+    textAlign: 'center',
   },
 });
 

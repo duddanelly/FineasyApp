@@ -13,6 +13,7 @@ import Icon from 'react-native-vector-icons/AntDesign';
 import Movimentacoes from './src/pages/Home/movimentacoes'
 import Loading from './src/pages/Loading/loading'
 import EditCategoria from './src/pages/Dashboard/editCategorias'
+import { AuthProvider } from './src/context/AuthContext';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -88,13 +89,18 @@ function MyTabs() {
       />
     </Tab.Navigator>
   );
+
+  
 }
 
 export default function App() {
   return (
+    <AuthProvider>
     <NavigationContainer>
       <MyTabs />
     </NavigationContainer>
+    </AuthProvider>
+    
     // <Loading/>
   );
 

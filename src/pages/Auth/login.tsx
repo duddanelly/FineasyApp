@@ -1,20 +1,31 @@
-import React from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { login } from '../../services/Auth'; 
 
 const LoginScreen: React.FC = () => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const navigation = useNavigation();
 
-  const handleLogin = () => {
-    // Lógica de login
+  const handleLogin = async () => {
+    try {
+      const response = await login(email, password);
+      console.log('Login successful:', response);
+      // Navegar para a tela inicial após login bem-sucedido
+      navigation.navigate('HomeScreen' as never);
+    } catch (error) {
+      Alert.alert('Erro', 'Falha ao fazer login. Verifique suas credenciais.');
+    }
   };
 
   const handleForgotPassword = () => {
-    // Lógica de recuperação de senha
+    // Navegar para a tela de recuperação de senha
+    // navigation.navigate('ForgotPassword');
   };
 
   const handleSignUp = () => {
-    // navigation.navigate('SignUp');
+    navigation.navigate('Cadastro' as never);
   };
 
   return (
@@ -24,20 +35,29 @@ const LoginScreen: React.FC = () => {
         <Text style={styles.appName}>FINEASY</Text>
       </View>
       <Text style={styles.loginText}>Login</Text>
-      <TextInput style={styles.input} placeholder="Insira seu email" placeholderTextColor="#999" />
-      <TextInput style={styles.input} placeholder="Insira sua senha" placeholderTextColor="#999" secureTextEntry />
+      <TextInput
+        style={styles.input}
+        placeholder="Insira seu email"
+        placeholderTextColor="#999"
+        value={email}
+        onChangeText={setEmail}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Insira sua senha"
+        placeholderTextColor="#999"
+        secureTextEntry
+        value={password}
+        onChangeText={setPassword}
+      />
       <TouchableOpacity onPress={handleForgotPassword}>
         <Text style={styles.forgotPasswordText}>Esqueceu sua senha?</Text>
       </TouchableOpacity>
       <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
-        <Text style={styles.loginButtonText} onPress={() => {
-          navigation.navigate('HomeScreen' as never);
-        }} >Faça o login</Text>
+        <Text style={styles.loginButtonText}>Faça o login</Text>
       </TouchableOpacity>
       <Text style={styles.signUpText}>
-        Não possui conta? <Text style={styles.signUpLink} onPress={() => {
-          navigation.navigate('Cadastro' as never);
-        }}>Faça o Autocadastro</Text>
+        Não possui conta? <Text style={styles.signUpLink} onPress={handleSignUp}>Faça o Autocadastro</Text>
       </Text>
     </View>
   );

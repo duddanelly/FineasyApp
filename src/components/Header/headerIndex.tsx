@@ -1,41 +1,30 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { StyleSheet, Text, View, Image, TouchableOpacity, Platform } from 'react-native';
 import Icon from 'react-native-vector-icons/AntDesign';
 import { getStatusBarHeight } from 'react-native-status-bar-height';
 import { useNavigation } from '@react-navigation/native';
-import { launchImageLibrary, ImageLibraryOptions } from 'react-native-image-picker';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useAuth } from '../../context/AuthContext'; 
 
 export default function Header() {
   const navigation = useNavigation();
-  // const [imageUri, setImageUri] = useState<string | null>(null);
+  const { setToken } = useAuth();
 
-  // const handleSelectImage = () => {
-  //   const options: ImageLibraryOptions = {
-  //     mediaType: 'photo',
-  //     maxWidth: 300,
-  //     maxHeight: 300,
-  //     quality: 1,
-  //   };
-
-  //   launchImageLibrary(options, (response) => {
-  //     if (response.didCancel) {
-  //       console.log('User cancelled image picker');
-  //     } else if (response.errorCode) {
-  //       console.log('ImagePicker Error: ', response.errorMessage);
-  //     } else if (response.assets && response.assets.length > 0 && response.assets[0].uri) {
-  //       setImageUri(response.assets[0].uri);
-  //     }
-  //   });
-  // };
+  const handleLogout = async () => {
+    try {
+      await AsyncStorage.removeItem('userToken');
+      setToken(null);
+      navigation.navigate('Login' as never);
+    } catch (error) {
+      console.error('Failed to logout:', error);
+    }
+  };
 
   return (
     <View style={styles.headerContainer}>
       <View style={styles.iconsContainer}>
-        <TouchableOpacity>
-          <Icon name="logout" color='white' size={25} style={styles.headerIcon} onPress={() => {
-            navigation.navigate('Login' as never);
-          }} />
+        <TouchableOpacity onPress={handleLogout}>
+          <Icon name="logout" color='white' size={25} style={styles.headerIcon} />
         </TouchableOpacity>
         <TouchableOpacity>
           <Icon name="bells" color='white' size={25} style={styles.headerIcon} />
@@ -45,10 +34,7 @@ export default function Header() {
         </TouchableOpacity>
       </View>
       <View style={styles.header}>
-        {/* <TouchableOpacity onPress={handleSelectImage}> */}
         <Image source={{ uri: '/Users/mariamuncinelli/FACULDADE/P5_MOBILE/FineasyApp/src/assets/porcobranco.png' }} style={styles.profileImage} />
-
-        {/* </TouchableOpacity> */}
         <Text style={styles.welcomeText}>Seja bem vindo ao</Text>
         <Text style={styles.userName}>Fineasy!</Text>
       </View>
@@ -76,7 +62,6 @@ const styles = StyleSheet.create({
   profileImage: {
     width: 100,
     height: 100,
-    // borderRadius: 50,
     marginBottom: 10,
   },
   welcomeText: {

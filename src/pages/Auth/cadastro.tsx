@@ -1,15 +1,39 @@
-import React from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 const CadastroScreen: React.FC = () => {
   const navigation = useNavigation();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
 
-  const handleSignUp = () => {
-    // Lógica de cadastro
+  const handleSignUp = async () => {
+    if (password !== confirmPassword) {
+      Alert.alert('Erro', 'As senhas não coincidem.');
+      return;
+    }
+
+    try {
+      const response = await fetch('http://localhost:5208/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (response.ok) {
+        Alert.alert('Sucesso', 'Cadastro realizado com sucesso!');
+        navigation.navigate('Login' as never);
+      } else {
+        const errorData = await response.json();
+        Alert.alert('Erro', errorData.message || 'Algo deu errado.');
+      }
+    } catch (error) {
+      Alert.alert('Erro', 'Não foi possível se conectar ao servidor.');
+    }
   };
-
-
 
   return (
     <View style={styles.container}>
@@ -18,13 +42,31 @@ const CadastroScreen: React.FC = () => {
         <Text style={styles.appName}>FINEASY</Text>
       </View>
       <Text style={styles.signUpText}>Cadastro</Text>
-      <TextInput style={styles.input} placeholder="Insira seu email" placeholderTextColor="#999" />
-      <TextInput style={styles.input} placeholder="Insira sua senha" placeholderTextColor="#999" secureTextEntry />
-      <TextInput style={styles.input} placeholder="Confirme sua senha" placeholderTextColor="#999" secureTextEntry />
-      <TouchableOpacity style={styles.signUpButton}>
-        <Text style={styles.signUpButtonText} onPress={() => {
-          navigation.navigate('Login' as never);
-        }} >Registrar</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Insira seu email"
+        placeholderTextColor="#999"
+        value={email}
+        onChangeText={setEmail}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Insira sua senha"
+        placeholderTextColor="#999"
+        secureTextEntry
+        value={password}
+        onChangeText={setPassword}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Confirme sua senha"
+        placeholderTextColor="#999"
+        secureTextEntry
+        value={confirmPassword}
+        onChangeText={setConfirmPassword}
+      />
+      <TouchableOpacity style={styles.signUpButton} onPress={handleSignUp}>
+        <Text style={styles.signUpButtonText}>Registrar</Text>
       </TouchableOpacity>
       <Text style={styles.loginText}>
         Já possui conta? <Text style={styles.loginLink} onPress={() => {
