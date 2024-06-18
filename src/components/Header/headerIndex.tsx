@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, View, Image, TouchableOpacity, Platform } from 'react-native';
-import Icon from 'react-native-vector-icons/AntDesign';
+import AntDesign from 'react-native-vector-icons/AntDesign';
 import { getStatusBarHeight } from 'react-native-status-bar-height';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -24,7 +24,7 @@ export default function Header() {
     <View style={styles.headerContainer}>
       <View style={styles.iconsContainer}>
         <TouchableOpacity onPress={handleLogout}>
-          <Icon name="logout" color='white' size={25} style={styles.headerIcon} />
+          <AntDesign name="logout" color='white' size={25} style={styles.headerIcon} />
         </TouchableOpacity>
       </View>
       <View style={styles.header}>
@@ -69,5 +69,7 @@ const styles = StyleSheet.create({
   },
   headerIcon: {
     marginLeft: 10,
+    fontSize: 30
+    
   },
 });

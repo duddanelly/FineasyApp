@@ -63,13 +63,14 @@ const EditCategorias: React.FC = () => {
 
   const renderItem = ({ item }: { item: Categoria }) => (
     <View style={styles.categoriaItem}>
+      <View style={[styles.colorCircle, { backgroundColor: item.color }]}></View>
       <Text style={styles.categoriaText}>{item.description}</Text>
-      <TouchableOpacity
+      {/* <TouchableOpacity
         style={styles.removeButton}
         onPress={() => removeCategoria(item.id)}
       >
         <Text style={styles.removeButtonText}>-</Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
     </View>
   );
 
@@ -127,6 +128,12 @@ const styles = StyleSheet.create({
   categoriaText: {
     fontSize: 16,
     color: '#000000',
+  },
+  colorCircle: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    marginRight: 10,
   },
   removeButton: {
     borderColor: '#FF6D01',

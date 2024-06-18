@@ -203,20 +203,20 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
   },
-  floatingButton: {
-    backgroundColor: '#FF6D01',
-    borderRadius: 50,
-    width: 60,
-    height: 60,
-    justifyContent: 'center',
-    alignItems: 'center',
-    position: 'absolute',
-    bottom: 30,
-    right: 30,
-  },
   floatingButtonText: {
-    color: '#FFF',
-    fontSize: 16,
+    color: '#96CEB4',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  floatingButton: {
+    backgroundColor: 'rgba(0, 0, 0, 0)',
+    width: 100,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 10,
+    borderRadius: 10,
+    marginTop: 10,
+    alignSelf: 'center',
   },
 });
 

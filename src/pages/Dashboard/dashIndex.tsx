@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, StatusBar, Alert } from 'react-native';
 import { PieChart } from 'react-native-chart-kit';
 import { Dimensions } from 'react-native';
 import Header from '../../components/Header/headerIndex';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const screenWidth = Dimensions.get('window').width;
@@ -95,6 +95,13 @@ const Dashboard = () => {
     fetchTransaction();
   }, []);
 
+  useFocusEffect(
+    useCallback(() => {
+      fetchCategorias();
+      fetchTransaction();
+    }, [])
+  );
+
   useEffect(() => {
     if (transactions.length > 0 && categorias.length > 0) {
       prepareChartData();
@@ -117,7 +124,6 @@ const Dashboard = () => {
     });
 
     const data = Object.values(categoryMap).map(categoria => {
-      // Verifica se categoria.totalValue é um número antes de formatar
       const population = typeof categoria.totalValue === 'number' ? parseFloat(categoria.totalValue.toFixed(2)) : 0;
     
       return {
@@ -129,7 +135,6 @@ const Dashboard = () => {
       };
     });
     
-
     setChartData(data);
   };
 
@@ -181,6 +186,12 @@ const Dashboard = () => {
           <Text style={styles.floatingButtonText}>+</Text>
         </TouchableOpacity>
       </View>
+      <TouchableOpacity style={styles.reloadButton} onPress={() => {
+        fetchCategorias();
+        fetchTransaction();
+      }}>
+        <Text style={styles.reloadButtonText}>Recarregar Dados</Text>
+      </TouchableOpacity>
     </SafeAreaView>
   );
 };
@@ -289,6 +300,18 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
+  },
+  reloadButton: {
+    backgroundColor: '#aedecf',
+    padding: 15,
+    borderRadius: 10,
+    alignItems: 'center',
+    margin: 10,
+  },
+  reloadButtonText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
   },
 });
 
