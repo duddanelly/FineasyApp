@@ -1,20 +1,32 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, StatusBar } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, StatusBar, Alert } from 'react-native';
 import { PieChart } from 'react-native-chart-kit';
 import { Dimensions } from 'react-native';
 import Header from '../../components/Header/headerIndex';
 import { useNavigation } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const screenWidth = Dimensions.get('window').width;
 
-const data = [
-  { name: 'Categoria 1', population: 35, color: '#a55eea', legendFontColor: '#7F7F7F', legendFontSize: 15 },
-  { name: 'Categoria 2', population: 25, color: '#f54291', legendFontColor: '#7F7F7F', legendFontSize: 15 },
-  { name: 'Categoria 3', population: 20, color: '#FF6D01', legendFontColor: '#7F7F7F', legendFontSize: 15 },
-  { name: 'Categoria 4', population: 10, color: '#2DBEFC', legendFontColor: '#7F7F7F', legendFontSize: 15 },
-  { name: 'Categoria 5', population: 5, color: '#50c878', legendFontColor: '#7F7F7F', legendFontSize: 15 },
-  { name: 'Categoria 6', population: 5, color: '#FBBC04', legendFontColor: '#7F7F7F', legendFontSize: 15 }
-];
+interface Transaction {
+  id: string;
+  description: string;
+  value: number;
+  date: string;
+  category: {
+    id: string;
+    description: string;
+    color: string;
+  };
+  isRecurrent: boolean;
+}
+
+interface Categoria {
+  id: string;
+  description: string;
+  color: string;
+  totalValue?: number;
+}
 
 const chartConfig = {
   backgroundGradientFrom: "#1E2923",
@@ -29,6 +41,97 @@ const chartConfig = {
 
 const Dashboard = () => {
   const navigation = useNavigation();
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [categorias, setCategorias] = useState<Categoria[]>([]);
+  const [chartData, setChartData] = useState<any[]>([]);
+
+  const fetchTransaction = async () => {
+    const token = await AsyncStorage.getItem('userToken');
+    try {
+      const response = await fetch('http://localhost:5208/Transaction', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+      const responseBody = await response.json();
+      if (response.status === 200) {
+        setTransactions(responseBody);
+      } else {
+        console.error('Erro na resposta do servidor:', responseBody);
+        Alert.alert('Erro', 'Algo deu errado ao buscar as transações.');
+      }
+    } catch (error) {
+      console.error('Erro ao buscar transações:', error);
+      Alert.alert('Erro', `Não foi possível se conectar ao servidor. Detalhes: ${error}`);
+    }
+  };
+
+  const fetchCategorias = async () => {
+    const token = await AsyncStorage.getItem('userToken');
+    try {
+      const response = await fetch('http://localhost:5208/Category', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+      const responseBody = await response.json();
+      if (response.status === 200) {
+        setCategorias(responseBody);
+      } else {
+        console.error('Erro na resposta do servidor:', responseBody);
+      }
+    } catch (error) {
+      console.error('Erro ao buscar categorias:', error);
+      Alert.alert('Erro', `Não foi possível se conectar ao servidor. Detalhes: ${error}`);
+    }
+  };
+
+  useEffect(() => {
+    fetchCategorias();
+    fetchTransaction();
+  }, []);
+
+  useEffect(() => {
+    if (transactions.length > 0 && categorias.length > 0) {
+      prepareChartData();
+    }
+  }, [transactions, categorias]);
+
+  const prepareChartData = () => {
+    const categoryMap: { [key: string]: Categoria } = categorias.reduce((acc, categoria) => {
+      acc[categoria.id] = {
+        ...categoria,
+        totalValue: 0
+      };
+      return acc;
+    }, {} as { [key: string]: Categoria });
+
+    transactions.forEach(transaction => {
+      if (categoryMap[transaction.category.id]) {
+        categoryMap[transaction.category.id].totalValue! += Math.abs(transaction.value);
+      }
+    });
+
+    const data = Object.values(categoryMap).map(categoria => {
+      // Verifica se categoria.totalValue é um número antes de formatar
+      const population = typeof categoria.totalValue === 'number' ? parseFloat(categoria.totalValue.toFixed(2)) : 0;
+    
+      return {
+        name: categoria.description,
+        population: population,
+        color: categoria.color,
+        legendFontColor: '#7F7F7F',
+        legendFontSize: 15
+      };
+    });
+    
+
+    setChartData(data);
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -52,7 +155,7 @@ const Dashboard = () => {
       <View style={styles.chartContainer}>
         <Text style={styles.chartTitle}>Despesas por categoria</Text>
         <PieChart
-          data={data}
+          data={chartData}
           width={screenWidth}
           height={220}
           chartConfig={chartConfig}

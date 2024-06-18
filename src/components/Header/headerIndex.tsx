@@ -26,12 +26,6 @@ export default function Header() {
         <TouchableOpacity onPress={handleLogout}>
           <Icon name="logout" color='white' size={25} style={styles.headerIcon} />
         </TouchableOpacity>
-        <TouchableOpacity>
-          <Icon name="bells" color='white' size={25} style={styles.headerIcon} />
-        </TouchableOpacity>
-        <TouchableOpacity>
-          <Icon name="questioncircleo" color='white' size={25} style={styles.headerIcon} />
-        </TouchableOpacity>
       </View>
       <View style={styles.header}>
         <Image source={{ uri: '/Users/mariamuncinelli/FACULDADE/P5_MOBILE/FineasyApp/src/assets/porcobranco.png' }} style={styles.profileImage} />

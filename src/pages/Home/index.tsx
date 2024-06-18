@@ -5,6 +5,7 @@ import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import LoadingScreen from '../Loading/loading';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+
 interface Transaction {
   id: string;
   description: string;
@@ -98,6 +99,9 @@ const HomeScreen: React.FC = () => {
     return <LoadingScreen />;
   }
 
+  // Filter transactions for 'Próximos Lançamentos'
+  const proximosLancamentos = transactions.filter(transaction => transaction.isRecurrent);
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentInsetAdjustmentBehavior="automatic">
@@ -118,16 +122,17 @@ const HomeScreen: React.FC = () => {
         </View>
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Próximos lançamentos</Text>
-          <View style={styles.upcomingItem}>
-            <Text style={styles.upcomingTitle}>Conta de telefone</Text>
-            <Text style={styles.upcomingDate}>03/MAI</Text>
-            <Text style={styles.upcomingAmount}>R$ 67,90</Text>
-          </View>
-          <View style={styles.upcomingItem}>
-            <Text style={styles.upcomingTitle}>Netflix</Text>
-            <Text style={styles.upcomingDate}>10/MAI</Text>
-            <Text style={styles.upcomingAmount}>R$ 70,00</Text>
-          </View>
+          {proximosLancamentos.length > 0 ? (
+            proximosLancamentos.map(transaction => (
+              <View key={transaction.id} style={styles.upcomingItem}>
+                <Text style={styles.upcomingTitle}>{transaction.description}</Text>
+                <Text style={styles.upcomingDate}>{new Date(transaction.date).toLocaleDateString()}</Text>
+                <Text style={styles.upcomingAmount}>R$ {transaction.value.toFixed(2)}</Text>
+              </View>
+            ))
+          ) : (
+            <Text style={styles.noTransactionsText}>Nenhum lançamento futuro encontrado.</Text>
+          )}
         </View>
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Últimas Movimentações</Text>
